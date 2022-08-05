@@ -4,6 +4,7 @@ from typing import Type
 
 class BaseConfig:
     JSON_AS_ASCII = False
+    RESTX_JSON = {'ensure_ascii': False}
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
     DEBUG = False

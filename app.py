@@ -4,7 +4,7 @@ from typing import Type
 import const
 from flask import Flask
 from blueprints.movie.models.movie import db
-from blueprints.movie.views import movie_blueprint
+from blueprints.movie.views import movie_blueprint, api
 from config import BaseConfig
 
 logging.basicConfig(filename=os.path.join(const.BASE_DIR, 'log', 'log.log'),
@@ -20,5 +20,6 @@ def create_app(config: Type[BaseConfig]) -> Flask:
     app.register_blueprint(movie_blueprint)
 
     db.init_app(app)
+    api.init_app(app)
 
     return app
