@@ -1,41 +1,24 @@
-# app.py
+import logging
+import os.path
+from typing import Type
+import const
+from flask import Flask
+from blueprints.movie.models.movie import db
+from blueprints.movie.views import movie_blueprint
+from config import BaseConfig
 
-from flask import Flask, request
-from flask_restx import Api, Resource
-from flask_sqlalchemy import SQLAlchemy
-from marshmallow import Schema, fields
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-
-class Movie(db.Model):
-    __tablename__ = 'movie'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255))
-    description = db.Column(db.String(255))
-    trailer = db.Column(db.String(255))
-    year = db.Column(db.Integer)
-    rating = db.Column(db.Float)
-    genre_id = db.Column(db.Integer, db.ForeignKey("genre.id"))
-    genre = db.relationship("Genre")
-    director_id = db.Column(db.Integer, db.ForeignKey("director.id"))
-    director = db.relationship("Director")
-
-class Director(db.Model):
-    __tablename__ = 'director'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
+logging.basicConfig(filename=os.path.join(const.BASE_DIR, 'log', 'log.log'),
+                    level=logging.INFO,
+                    format='%(asctime)s - [%(levelname)s] - %(name)s -'
+                           ' (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s')
+logger = logging.getLogger(__name__)
 
 
-class Genre(db.Model):
-    __tablename__ = 'genre'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
+def create_app(config: Type[BaseConfig]) -> Flask:
+    app = Flask(__name__)
+    app.config.from_object(config)
+    app.register_blueprint(movie_blueprint)
 
+    db.init_app(app)
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return app
